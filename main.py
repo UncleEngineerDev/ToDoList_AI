@@ -1,7 +1,43 @@
+import json
+import os
+
+TASKS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tasks.json")
+
 print("Hello World")
 
 # เก็บรายการงานทั้งหมด
 tasks = []
+
+def save_tasks():
+    """บันทึก tasks ลงไฟล์ tasks.json"""
+    try:
+        with open(TASKS_FILE, "w", encoding="utf-8") as f:
+            json.dump(tasks, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"สังเกต: เกิดข้อผิดพลาดตอนบันทึกข้อมูล: {e}")
+
+def load_tasks():
+    """โหลด tasks จากไฟล์ tasks.json (ถ้าไม่มีไฟล์ ให้เริ่มจากรายการว่าง)"""
+    global tasks
+    if not os.path.exists(TASKS_FILE):
+        return
+    try:
+        with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            if isinstance(data, list):
+                tasks = data
+            else:
+                print("ไฟล์ tasks.json ไม่อยู่ในรูปแบบที่ถูกต้อง — เริ่มจากรายการว่าง")
+                tasks = []
+    except json.JSONDecodeError:
+        print("ไฟล์ tasks.json ไม่สามารถอ่านได้หรือไม่ถูกต้อง — เริ่มจากรายการว่าง")
+        tasks = []
+    except Exception as e:
+        print(f"สังเกต: เกิดข้อผิดพลาดตอนโหลดข้อมูล: {e}")
+        tasks = []
+
+# โหลดข้อมูลเมื่อเริ่มโปรแกรม
+load_tasks()
 
 def add_task():
     """เพิ่มงานใหม่ (empty -> รับข้อมูลจากผู้ใช้และเก็บลง tasks)"""
@@ -148,28 +184,34 @@ def delete_task():
         print("กรุณาตอบ y หรือ n")
 
 def main_menu():
-    while True:
-        print("\nเมนูหลัก:")
-        print("1. เพิ่มงานใหม่")
-        print("2. ดูงานทั้งหมด")
-        print("3. แก้ไขงาน")
-        print("4. ลบงาน")
-        print("5. ออกจากโปรแกรม")
-        choice = input("เลือกเมนู (1-5): ").strip()
+    try:
+        while True:
+            print("\nเมนูหลัก:")
+            print("1. เพิ่มงานใหม่")
+            print("2. ดูงานทั้งหมด")
+            print("3. แก้ไขงาน")
+            print("4. ลบงาน")
+            print("5. ออกจากโปรแกรม")
+            choice = input("เลือกเมนู (1-5): ").strip()
 
-        if choice == "1":
-            add_task()
-        elif choice == "2":
-            view_tasks()
-        elif choice == "3":
-            edit_task()
-        elif choice == "4":
-            delete_task()
-        elif choice == "5":
-            print("ออกจากโปรแกรม")
-            break
-        else:
-            print("ตัวเลือกไม่ถูกต้อง กรุณาลองอีกครั้ง")
+            if choice == "1":
+                add_task()
+            elif choice == "2":
+                view_tasks()
+            elif choice == "3":
+                edit_task()
+            elif choice == "4":
+                delete_task()
+            elif choice == "5":
+                print("ออกจากโปรแกรม")
+                break
+            else:
+                print("ตัวเลือกไม่ถูกต้อง กรุณาลองอีกครั้ง")
+    except KeyboardInterrupt:
+        print("\nยุติโปรแกรมโดยผู้ใช้")
+    finally:
+        # บันทึกข้อมูลก่อนออกเสมอ
+        save_tasks()
 
 if __name__ == "__main__":
     main_menu()
