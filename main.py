@@ -38,9 +38,65 @@ def view_tasks():
         due = t.get("due_date") or "-"
         print(f"{idx}. {t.get('title')} | วันครบกำหนด: {due} | สถานะ: {status}")
 
+def update_task():
+    """แก้ไขข้อมูลงาน: เลือกจากลำดับ (index) และแก้ title, description, completed"""
+    if not tasks:
+        print("ยังไม่มีงานในรายการ")
+        return
+
+    print("\nรายการงาน:")
+    for idx, t in enumerate(tasks, start=1):
+        status = "เสร็จแล้ว" if t.get("completed") else "ยังไม่เสร็จ"
+        due = t.get("due_date") or "-"
+        print(f"{idx}. {t.get('title')} | วันครบกำหนด: {due} | สถานะ: {status}")
+
+    # เลือกงานโดย index (1-based)
+    while True:
+        sel = input("เลือกหมายเลขงานที่จะแก้ไข (หรือกด q เพื่อยกเลิก): ").strip()
+        if sel.lower() == "q":
+            print("ยกเลิกการแก้ไข")
+            return
+        if not sel.isdigit():
+            print("กรุณากรอกตัวเลขที่ถูกต้อง")
+            continue
+        idx = int(sel)
+        if not (1 <= idx <= len(tasks)):
+            print("เลขลำดับไม่ถูกต้อง กรุณาลองอีกครั้ง")
+            continue
+        task = tasks[idx - 1]
+        break
+
+    # แก้ชื่องาน
+    print(f"ชื่องานปัจจุบัน: {task.get('title')}")
+    new_title = input("ชื่องานใหม่ (เว้นว่างเพื่อคงเดิม): ").strip()
+    if new_title:
+        task['title'] = new_title
+
+    # แก้รายละเอียด
+    print(f"รายละเอียดปัจจุบัน: {task.get('description')}")
+    new_desc = input("รายละเอียดใหม่ (เว้นว่างเพื่อคงเดิม): ").strip()
+    if new_desc:
+        task['description'] = new_desc
+
+    # แก้สถานะ completed
+    cur = "y" if task.get('completed') else "n"
+    while True:
+        new_comp = input(f"สถานะเสร็จแล้ว? (y/n, เว้นว่างคงเดิม) [ปัจจุบัน: {cur}]: ").strip().lower()
+        if new_comp == "":
+            break
+        if new_comp in ("y", "yes"):
+            task['completed'] = True
+            break
+        if new_comp in ("n", "no"):
+            task['completed'] = False
+            break
+        print("กรุณากรอก y หรือ n หรือเว้นว่างเพื่อคงเดิม")
+
+    print(f"อัปเดตงานเรียบร้อย (id={task.get('id')})")
+
 def edit_task():
-    """แก้ไขงาน (empty)"""
-    pass
+    """แก้ไขงาน (wrapper -> update_task)"""
+    update_task()
 
 def delete_task():
     """ลบงาน (empty)"""
