@@ -99,8 +99,53 @@ def edit_task():
     update_task()
 
 def delete_task():
-    """ลบงาน (empty)"""
-    pass
+    """ลบงาน: เลือกจากลำดับ (index) และยืนยันก่อนลบ"""
+    if not tasks:
+        print("ยังไม่มีงานในรายการ")
+        return
+
+    print("\nรายการงาน:")
+    for idx, t in enumerate(tasks, start=1):
+        status = "เสร็จแล้ว" if t.get("completed") else "ยังไม่เสร็จ"
+        due = t.get("due_date") or "-"
+        print(f"{idx}. {t.get('title')} | วันครบกำหนด: {due} | สถานะ: {status}")
+
+    # เลือกงานโดย index (1-based)
+    while True:
+        sel = input("เลือกหมายเลขงานที่จะลบ (หรือกด q เพื่อยกเลิก): ").strip()
+        if sel.lower() == "q":
+            print("ยกเลิกการลบ")
+            return
+        if not sel.isdigit():
+            print("กรุณากรอกตัวเลขที่ถูกต้อง")
+            continue
+        idx = int(sel)
+        if not (1 <= idx <= len(tasks)):
+            print("เลขลำดับไม่ถูกต้อง กรุณาลองอีกครั้ง")
+            continue
+        task = tasks[idx - 1]
+        break
+
+    # แสดงรายละเอียดสั้น ๆ ของงานที่เลือกเพื่อยืนยัน
+    print("\nงานที่เลือก:")
+    due = task.get("due_date") or "-"
+    status = "เสร็จแล้ว" if task.get("completed") else "ยังไม่เสร็จ"
+    print(f"ชื่องาน: {task.get('title')}")
+    print(f"รายละเอียด: {task.get('description')}")
+    print(f"วันครบกำหนด: {due}")
+    print(f"สถานะ: {status}")
+
+    # ยืนยันการลบ
+    while True:
+        confirm = input("ต้องการลบงานนี้จริงหรือไม่ (y/n): ").strip().lower()
+        if confirm in ("y", "yes"):
+            removed = tasks.pop(idx - 1)
+            print(f"ลบงานเรียบร้อย (id={removed.get('id')})")
+            return
+        if confirm in ("n", "no"):
+            print("ยกเลิกการลบ")
+            return
+        print("กรุณาตอบ y หรือ n")
 
 def main_menu():
     while True:
