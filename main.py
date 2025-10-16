@@ -27,8 +27,16 @@ def add_task():
     print(f"เพิ่มงานเรียบร้อย (id={next_id})")
 
 def view_tasks():
-    """ดูงานทั้งหมด (empty)"""
-    pass
+    """ดูงานทั้งหมด"""
+    if not tasks:
+        print("ยังไม่มีงานในรายการ")
+        return
+
+    print("\nรายการงานทั้งหมด:")
+    for idx, t in enumerate(tasks, start=1):
+        status = "เสร็จแล้ว" if t.get("completed") else "ยังไม่เสร็จ"
+        due = t.get("due_date") or "-"
+        print(f"{idx}. {t.get('title')} | วันครบกำหนด: {due} | สถานะ: {status}")
 
 def edit_task():
     """แก้ไขงาน (empty)"""
