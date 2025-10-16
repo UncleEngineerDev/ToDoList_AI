@@ -1,8 +1,30 @@
 print("Hello World")
 
+# เก็บรายการงานทั้งหมด
+tasks = []
+
 def add_task():
-    """เพิ่มงานใหม่ (empty)"""
-    pass
+    """เพิ่มงานใหม่ (empty -> รับข้อมูลจากผู้ใช้และเก็บลง tasks)"""
+    title = ""
+    while not title.strip():
+        title = input("ชื่องาน: ").strip()
+        if not title:
+            print("ชื่องานห้ามว่าง กรุณากรอกอีกครั้ง")
+    description = input("รายละเอียด: ").strip()
+    due_date = input("วันครบกำหนด (ตัวอย่าง 2025-10-31 หรือเว้นว่าง): ").strip()
+
+    # หาค่า id ถัดไป
+    next_id = max((t['id'] for t in tasks), default=0) + 1
+
+    task = {
+        "id": next_id,
+        "title": title,
+        "description": description,
+        "due_date": due_date,
+        "completed": False
+    }
+    tasks.append(task)
+    print(f"เพิ่มงานเรียบร้อย (id={next_id})")
 
 def view_tasks():
     """ดูงานทั้งหมด (empty)"""
